@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 Designing Statistical Studies - رياضيات 12 عام | Mr. Mohammed Hesham</title>
+<meta name="description" content="امتحان تفاعلي عن تصنيف الدراسات الإحصائية وتحيز الأسئلة وتصميم التجارب - صف 12 عام">
+<meta name="author" content="Mr. Mohammed Hesham">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Inter:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); }
+body.en-mode { font-family: 'Inter', sans-serif; direction: ltr; }
+.arabic-math { font-family: 'Amiri', 'Cairo', serif; }
+.correct { background-color: #dcfce7 !important; border-color: #16a34a !important; }
+.incorrect { background-color: #fee2e2 !important; border-color: #dc2626 !important; }
+.timer-warning { color: #dc2626 !important; animation: pulse 1s infinite; }
+@keyframes pulse { 50% { opacity: 0.7; } }
+@media print { .no-print { display: none !important; } }
+.success-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.875rem; }
+.grade-excellent { background: #dcfce7; color: #166534; }
+.grade-good { background: #fef3c7; color: #92400e; }
+.grade-pass { background: #dbeafe; color: #1e40af; }
+.grade-fail { background: #fee2e2; color: #991b1b; }
+.lang-switch { position: fixed; top: 16px; left: 16px; z-index: 100; background: white; padding: 6px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); display: flex; gap: 4px; border: 2px solid #15803d; }
+body.en-mode .lang-switch { left: auto; right: 16px; }
+.lang-btn { padding: 6px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; border: none; font-size: 0.875rem; background: transparent; color: #6b7280; }
+.lang-btn.active { background: #15803d; color: white; }
+.shuffle-badge { display: inline-block; background: linear-gradient(135deg, #15803d, #166534); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-right: 8px; }
+body.en-mode .shuffle-badge { margin-right: 0; margin-left: 8px; }
+.math-display { display: inline-block; direction: ltr; font-family: 'Amiri', serif; font-size: 1.05em; padding: 2px 6px; background: #dcfce7; border-radius: 4px; margin: 2px; color: #166534; font-weight: 600; }
+.save-indicator { position: fixed; bottom: 20px; left: 20px; z-index: 200; background: #10b981; color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+body.en-mode .save-indicator { left: auto; right: 20px; }
+.save-indicator.show { opacity: 1; }
+.formula-box { background: #dcfce7; border: 2px solid #15803d; border-radius: 8px; padding: 12px; margin: 10px 0; text-align: center; }
+.svg-graph { display: block; margin: 12px auto; background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 8px; max-width: 100%; }
+.graph-container { text-align: center; margin: 10px 0; }
+.module-badge { display: inline-block; padding: 4px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; margin-bottom: 8px; }
+.module-1 { background: #dcfce7; color: #166534; }
+.module-2 { background: #dbeafe; color: #1e40af; }
+.module-3 { background: #fce7f3; color: #9f1239; }
+.module-4 { background: #fef3c7; color: #92400e; }
+.module-5 { background: #ede9fe; color: #5b21b6; }
+.module-6 { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+<div class="lang-switch no-print">
+<button class="lang-btn active" onclick="setLanguage('ar')" id="btn-ar">عربي</button>
+<button class="lang-btn" onclick="setLanguage('en')" id="btn-en">EN</button>
+</div>
+
+<div id="saveIndicator" class="save-indicator">💾 <span data-ar="تم الحفظ" data-en="Saved">تم الحفظ</span></div>
+
+<div id="timer-container" class="max-w-5xl mx-auto mb-4 text-center no-print">
+<div class="bg-white p-4 rounded-2xl shadow-lg inline-block border-2 border-green-100">
+<span class="text-gray-600 ml-2">⏰ <span data-ar="الوقت المتبقي:" data-en="Time Left:">الوقت المتبقي:</span></span>
+<span id="timer" class="text-2xl font-bold text-green-700 font-mono">60:00</span>
+<span class="shuffle-badge">📊 <span data-ar="تصميم الدراسات" data-en="Study Design">تصميم الدراسات</span> - 30 <span data-ar="سؤال" data-en="Questions">سؤال</span></span>
+</div>
+</div>
+
+<div class="max-w-5xl mx-auto mb-6 flex flex-wrap gap-3 justify-center no-print">
+<button onclick="toggleAnswers()" class="bg-green-700 hover:bg-green-800 text-white px-5 py-2 rounded-xl font-medium transition shadow">👀 <span data-ar="إظهار/إخفاء الإجابات" data-en="Show/Hide Answers">إظهار/إخفاء الإجابات</span></button>
+<button onclick="window.print()" class="bg-gray-700 hover:bg-gray-900 text-white px-5 py-2 rounded-xl font-medium transition shadow">🖨️ <span data-ar="طباعة" data-en="Print">طباعة</span></button>
+<button onclick="reshuffleExam()" class="bg-gradient-to-r from-green-700 to-emerald-600 hover:from-green-800 hover:to-emerald-700 text-white px-5 py-2 rounded-xl font-medium transition shadow">🔄 <span data-ar="أسئلة جديدة" data-en="New Questions">أسئلة جديدة</span></button>
+<button onclick="clearProgress()" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl font-medium transition shadow">🗑️ <span data-ar="مسح التقدم" data-en="Clear Progress">مسح التقدم</span></button>
+</div>
+
+<header class="max-w-5xl mx-auto bg-white p-8 rounded-3xl shadow-2xl mb-8 border-4 border-green-500">
+<div class="text-center">
+<div class="inline-block bg-green-700 text-white px-6 py-2 rounded-full text-sm font-bold mb-4">MATH GRADE 12 GENERAL - STATISTICS</div>
+<h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">📊 <span data-ar="تصميم الدراسات الإحصائية: تجربة، استطلاع، دراسة مسحية" data-en="Designing Statistical Studies: Experiment, Survey, Observational Study">تصميم الدراسات الإحصائية: تجربة، استطلاع، دراسة مسحية</span></h1>
+<h2 class="text-xl text-green-700 font-semibold mb-2"><span data-ar="تحديد الأنواع، العينة والمجتمع، تحيز الأسئلة، وأخطاء التجارب" data-en="Identifying types, sample & population, question bias, and experiment errors">تحديد الأنواع، العينة والمجتمع، تحيز الأسئلة، وأخطاء التجارب</span></h2>
+<p class="text-gray-600 mb-4"><span data-ar="مثال 1: تصنيف أنواع الدراسة + تمارين التحيز وتصميم التجارب" data-en="Example 1: Classifying studies + bias & experiment design exercises">مثال 1: تصنيف أنواع الدراسة + تمارين التحيز وتصميم التجارب</span></p>
+<p class="text-sm text-green-600 font-semibold">💾 <span data-ar="يتم حفظ تقدمك تلقائياً - 30 سؤالاً في 6 أقسام" data-en="Auto-saved - 30 questions in 6 sections">يتم حفظ تقدمك تلقائياً - 30 سؤالاً في 6 أقسام</span></p>
+</div>
+<div class="mt-6 flex flex-wrap justify-center gap-4 text-sm text-gray-600">
+<span>📅 <span data-ar="التاريخ:" data-en="Date:">التاريخ:</span> <input type="text" id="examDate" class="border-b-2 border-green-300 bg-transparent w-32 text-center"></span>
+<span>😊 <span data-ar="الاسم:" data-en="Name:">الاسم:</span> <input type="text" id="studentName" class="border-b-2 border-green-300 bg-transparent w-40 text-center" data-placeholder-ar="اكتب اسمك" data-placeholder-en="Your name" placeholder="اكتب اسمك"></span>
+<span>🏫 <span data-ar="الشعبة:" data-en="Class:">الشعبة:</span> <input type="text" id="studentClass" class="border-b-2 border-green-300 bg-transparent w-32 text-center" data-placeholder-ar="الشعبة" data-placeholder-en="Class" placeholder="الشعبة"></span>
+<span>⏰ <span data-ar="المدة: 60 دقيقة" data-en="Duration: 60 min">المدة: 60 دقيقة</span></span>
+<span>📊 <span data-ar="المجموع: 100 درجة" data-en="Total: 100 points">المجموع: 100 درجة</span></span>
+</div>
+</header>
+
+<div class="max-w-5xl mx-auto mb-6 bg-white p-4 rounded-xl shadow-lg border-2 border-green-200 no-print">
+<h3 class="font-bold text-lg mb-3 text-green-800 text-center">🔍 <span data-ar="كيف تصنّف الدراسة؟" data-en="How to Classify a Study?">كيف تصنّف الدراسة؟</span></h3>
+<div class="grid md:grid-cols-3 gap-3 text-sm">
+<div class="formula-box"><strong>👁️ <span data-ar="دراسة مسحية (ملاحظة):" data-en="Observational:">دراسة مسحية (ملاحظة):</span></strong><br><span data-ar="يلاحظ ويسجل دون أي تدخل أو فرض معالجة" data-en="Observes & records without interference">يلاحظ ويسجل دون أي تدخل أو فرض معالجة</span></div>
+<div class="formula-box"><strong>📋 <span data-ar="استطلاع (مسح):" data-en="Survey:">استطلاع (مسح):</span></strong><br><span data-ar="يجمع البيانات من إجابات أسئلة/استبيان" data-en="Collects data from question responses">يجمع البيانات من إجابات أسئلة/استبيان</span></div>
+<div class="formula-box"><strong>⚗️ <span data-ar="تجربة:" data-en="Experiment:">تجربة:</span></strong><br><span data-ar="يفرض معالجة ويقارن بمجموعة ضابطة" data-en="Imposes treatment & compares with control">يفرض معالجة ويقارن بمجموعة ضابطة</span></div>
+</div>
+<div id="method-holder" class="mt-2"></div>
+</div>
+
+<main class="max-w-5xl mx-auto space-y-8" id="exam-content"></main>
+
+<div class="text-center no-print pb-8 mt-8">
+<button onclick="gradeExam()" class="bg-gradient-to-r from-green-700 to-emerald-600 hover:from-green-800 hover:to-emerald-700 text-white text-lg px-12 py-4 rounded-2xl font-bold shadow-xl transition transform hover:scale-105">🎯 <span data-ar="صحح إجاباتي!" data-en="Grade My Exam!">صحح إجاباتي!</span></button>
+</div>
+
+<div id="results-panel" class="max-w-5xl mx-auto mt-8 bg-white p-8 rounded-3xl shadow-2xl border-4 border-green-500 hidden no-print">
+<h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">🏆 <span data-ar="نتيجتك يا بطل!" data-en="Your Result, Champion!">نتيجتك يا بطل!</span> 🏆</h2>
+<div class="grid md:grid-cols-3 gap-4 mb-6">
+<div class="bg-green-50 p-4 rounded-xl text-center"><p>😊 <span data-ar="الاسم" data-en="Name">الاسم</span></p><p id="res-name" class="font-bold text-xl text-green-700">-</p></div>
+<div class="bg-emerald-50 p-4 rounded-xl text-center"><p>📅 <span data-ar="التاريخ" data-en="Date">التاريخ</span></p><p id="res-date" class="font-bold text-xl text-emerald-700">-</p></div>
+<div class="bg-green-50 p-4 rounded-xl text-center"><p>🌟 <span data-ar="المجموع" data-en="Total">المجموع</span></p><p id="res-total" class="font-bold text-3xl text-green-700">0 / 100</p></div>
+</div>
+<div class="text-center mb-6">
+<span id="success-badge" class="success-badge grade-excellent">-</span>
+<p id="success-percent" class="text-4xl font-bold text-green-700 mt-2">0%</p>
+<p class="text-sm text-gray-500"><span data-ar="نسبة النجاح" data-en="Success Rate">نسبة النجاح</span></p>
+</div>
+<div class="bg-gray-50 p-6 rounded-xl mb-6">
+<h3 class="font-bold text-lg mb-4 text-gray-800">📊 <span data-ar="أداؤك في كل قسم:" data-en="Your Performance by Section:">أداؤك في كل قسم:</span></h3>
+<div class="space-y-3" id="sections-performance"></div>
+</div>
+<div class="text-center">
+<button id="sendEmailBtn" onclick="sendResultsToEmail()" class="bg-gradient-to-r from-green-700 to-emerald-600 text-white text-lg px-8 py-3 rounded-2xl font-bold shadow-xl transition">📧 <span data-ar="أرسل النتيجة للمعلم" data-en="Send Result to Teacher">أرسل النتيجة للمعلم</span></button>
+<p id="emailStatus" class="text-sm mt-2 text-center font-medium"></p>
+</div>
+</div>
+
+<footer class="max-w-5xl mx-auto mt-10 mb-8 text-center text-gray-500 text-sm no-print">
+© Designing Statistical Studies - Grade 12 General | Mr. Mohammed Hesham 📊
+</footer>
+
+<script>
+const PUBLIC_KEY = "Rb3Lq8tXaFmc5YHUH";
+const SERVICE_ID = "service_w15m64i";
+const TEMPLATE_ID = "template_5b0u2tq";
+const TARGET_EMAIL = "mohammedhesham872@gmail.com";
+emailjs.init(PUBLIC_KEY);
+
+const STORAGE_KEY = 'study_design_grade12_v1';
+const TOTAL_TIME = 3600;
+const TOTAL_QUESTIONS = 30;
+const TOTAL_SECTIONS = 6;
+const QUESTIONS_PER_SECTION = 5;
+
+let currentSeed = null, answersVisible = false, saveIndicatorTimeout = null;
+let currentLang = 'ar', timeRemaining = TOTAL_TIME, timerInterval;
+let examData, correctAnswersMap = {}, rng = null;
+
+function mulberry32(a){return function(){var t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function showSaveIndicator(){const i=document.getElementById('saveIndicator');i.classList.add('show');if(saveIndicatorTimeout)clearTimeout(saveIndicatorTimeout);saveIndicatorTimeout=setTimeout(()=>i.classList.remove('show'),1500)}
+function saveState(s=true){try{localStorage.setItem(STORAGE_KEY,JSON.stringify({seed:currentSeed,lang:currentLang,studentName:document.getElementById('studentName').value,studentClass:document.getElementById('studentClass').value,examDate:document.getElementById('examDate').value,answers:getSelectedAnswers(),timeRemaining:timeRemaining,answersVisible:answersVisible,savedAt:Date.now()}));if(s)showSaveIndicator()}catch(e){console.error(e)}}
+function loadState(){try{const s=localStorage.getItem(STORAGE_KEY);return s?JSON.parse(s):null}catch(e){return null}}
+function getSelectedAnswers(){const a={};for(let i=0;i<TOTAL_QUESTIONS;i++){const s=document.querySelector('input[name="q'+i+'"]:checked');if(s)a[i]=s.value}return a}
+function restoreAnswers(a){if(!a)return;for(const[i,v]of Object.entries(a)){const r=document.querySelector('input[name="q'+i+'"][value="'+v+'"]');if(r)r.checked=true}}
+function clearProgress(){if(confirm(currentLang==='ar'?'⚠️ هل أنت متأكد من مسح كل التقدم؟':'⚠️ Clear all progress?')){localStorage.removeItem(STORAGE_KEY);location.reload()}}
+function setupAnswerListeners(){document.getElementById('exam-content').addEventListener('change',e=>{if(e.target.type==='radio')saveState()})}
+function setupInputListeners(){['studentName','studentClass','examDate'].forEach(id=>{const el=document.getElementById(id);if(el){el.addEventListener('input',()=>saveState(false));el.addEventListener('blur',()=>saveState())}})}
+
+// ==================== SVG DIAGRAMS ====================
+const svgGraphs = {
+fig_decision: `<svg class="svg-graph" width="500" height="300" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="290" rx="12" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#166534" font-weight="bold">🧭 شجرة قرار تصنيف الدراسة</text>
+<rect x="180" y="40" width="140" height="36" rx="8" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/>
+<text x="250" y="63" text-anchor="middle" font-size="11" fill="#166534" font-weight="bold">افحص الموقف</text>
+<line x1="250" y1="76" x2="250" y2="96" stroke="#15803d" stroke-width="2" marker-end="url(#dA)"/>
+<rect x="160" y="98" width="180" height="34" rx="8" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/>
+<text x="250" y="120" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">هل فُرضت معالجة وقورنت مجموعات؟</text>
+<line x1="340" y1="115" x2="400" y2="115" stroke="#16a34a" stroke-width="2"/>
+<text x="370" y="108" text-anchor="middle" font-size="10" fill="#16a34a" font-weight="bold">نعم</text>
+<rect x="400" y="98" width="80" height="34" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="440" y="120" text-anchor="middle" font-size="11" fill="#166534" font-weight="bold">⚗️ تجربة</text>
+<line x1="250" y1="132" x2="250" y2="152" stroke="#15803d" stroke-width="2" marker-end="url(#dA)"/>
+<text x="262" y="146" font-size="10" fill="#dc2626" font-weight="bold">لا</text>
+<rect x="160" y="154" width="180" height="34" rx="8" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/>
+<text x="250" y="176" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">هل طُرحت أسئلة/استبيان على أفراد؟</text>
+<line x1="340" y1="171" x2="400" y2="171" stroke="#16a34a" stroke-width="2"/>
+<text x="370" y="164" text-anchor="middle" font-size="10" fill="#16a34a" font-weight="bold">نعم</text>
+<rect x="400" y="154" width="80" height="34" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="440" y="176" text-anchor="middle" font-size="11" fill="#166534" font-weight="bold">📋 استطلاع</text>
+<line x1="250" y1="188" x2="250" y2="208" stroke="#15803d" stroke-width="2" marker-end="url(#dA)"/>
+<text x="262" y="202" font-size="10" fill="#dc2626" font-weight="bold">لا</text>
+<rect x="160" y="210" width="180" height="34" rx="8" fill="#bbf7d0" stroke="#15803d" stroke-width="2"/>
+<text x="250" y="232" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">يلاحظ ويسجل دون تدخل؟</text>
+<line x1="340" y1="227" x2="400" y2="227" stroke="#16a34a" stroke-width="2"/>
+<text x="370" y="220" text-anchor="middle" font-size="10" fill="#16a34a" font-weight="bold">نعم</text>
+<rect x="400" y="210" width="80" height="34" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="440" y="226" text-anchor="middle" font-size="10" fill="#166534" font-weight="bold">👁️ مسحية</text>
+<text x="440" y="239" text-anchor="middle" font-size="8.5" fill="#166534">(ملاحظة)</text>
+<rect x="30" y="254" width="440" height="34" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="276" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">💡 مثال أشيد: عرض أغلفة ومشاهدة ردود الفعل دون تأثير ⇒ دراسة مسحية</text>
+<defs><marker id="dA" markerWidth="8" markerHeight="8" refX="4" refY="7" orient="auto"><path d="M0,0 L8,0 L4,7 z" fill="#15803d"/></marker></defs>
+</svg>`,
+
+fig_sample_pop: `<svg class="svg-graph" width="500" height="280" viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="270" rx="12" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#1e40af" font-weight="bold">👥 العينة والمجتمع في دراسة أشيد (الأغلفة)</text>
+<circle cx="150" cy="140" r="95" fill="#bfdbfe" stroke="#2563eb" stroke-width="2.5"/>
+<text x="150" y="70" text-anchor="middle" font-size="11" fill="#1e40af" font-weight="bold">المجتمع الإحصائي</text>
+<text x="150" y="86" text-anchor="middle" font-size="9.5" fill="#1e40af">كل المشترين المحتملين للألبوم</text>
+<circle cx="170" cy="165" r="42" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="170" y="160" text-anchor="middle" font-size="10" fill="#166534" font-weight="bold">العينة</text>
+<text x="170" y="176" text-anchor="middle" font-size="9.5" fill="#166534">50 مراهقاً</text>
+<g font-size="13" fill="#1e40af"><text x="90" y="130">👤</text><text x="110" y="115">👤</text><text x="80" y="180">👤</text><text x="120" y="200">👤</text><text x="200" y="110">👤</text><text x="215" y="200">👤</text></g>
+<rect x="280" y="60" width="190" height="160" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<text x="375" y="84" text-anchor="middle" font-size="11" fill="#1e40af" font-weight="bold">تعريفات</text>
+<text x="375" y="106" text-anchor="middle" font-size="9.5" fill="#1e40af">المجتمع: كل أفراد الفئة المستهدفة</text>
+<text x="375" y="126" text-anchor="middle" font-size="9.5" fill="#1e40af">العينة: جزء يُختار للدراسة</text>
+<text x="375" y="146" text-anchor="middle" font-size="9.5" fill="#166534" font-weight="bold">عينة جيدة = ممثلة وعشوائية</text>
+<line x1="300" y1="158" x2="450" y2="158" stroke="#93c5fd" stroke-width="1"/>
+<text x="375" y="178" text-anchor="middle" font-size="9.5" fill="#1e40af">إعادة التدوير: المجتمع = كل مواطني المدينة</text>
+<text x="375" y="196" text-anchor="middle" font-size="9.5" fill="#1e40af">العينة = 200 مواطن استجابوا</text>
+<text x="375" y="212" text-anchor="middle" font-size="9" fill="#dc2626">الكتاب السنوي: العينة = المشاركون</text>
+<rect x="30" y="232" width="440" height="32" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="253" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">💡 الاستنتاج في دراسة أشيد يُعمّم على المجتمع فقط إذا كانت العينة عشوائية وممثلة</text>
+</svg>`,
+
+fig_bias_leading: `<svg class="svg-graph" width="500" height="260" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="250" rx="12" fill="#fce7f3" stroke="#ec4899" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#9f1239" font-weight="bold">⚠️ سؤال متحيز (موجّه): «ألا توافق...؟»</text>
+<rect x="40" y="45" width="250" height="70" rx="14" fill="#fbcfe8" stroke="#ec4899" stroke-width="2"/>
+<text x="165" y="70" text-anchor="middle" font-size="11" fill="#9f1239" font-weight="bold">«ألا توافق بأنه ينبغي مرافقة الكبار</text>
+<text x="165" y="88" text-anchor="middle" font-size="11" fill="#9f1239" font-weight="bold">للطلاب الصغار عند ذهابهم إلى المدرسة؟»</text>
+<text x="165" y="106" text-anchor="middle" font-size="9" fill="#9f1239">صيغة تدفع للموافقة</text>
+<path d="M 295 80 L 330 80" stroke="#dc2626" stroke-width="2.5" marker-end="url(#bL)"/>
+<rect x="335" y="50" width="130" height="60" rx="10" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+<text x="400" y="75" text-anchor="middle" font-size="12" fill="#991b1b" font-weight="bold">يجيب: «نعم» 💬</text>
+<text x="400" y="95" text-anchor="middle" font-size="9" fill="#991b1b">شبه اضطرارياً!</text>
+<rect x="40" y="130" width="425" height="60" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="252" y="152" text-anchor="middle" font-size="11" fill="#92400e" font-weight="bold">لماذا هو متحيز؟ عبارة «ألا توافق» تقترح على الشخص أن يوافق</text>
+<text x="252" y="172" text-anchor="middle" font-size="10" fill="#92400e">الصياغة المحايدة: «ما رأيك في مرافقة الكبار للطلاب الصغار؟»</text>
+<rect x="40" y="200" width="425" height="44" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text x="252" y="218" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">🔑 كلمات تحذيرية: «ألا توافق»، «أليس»، «هل تعتقد أن... رائع/سيئ»</text>
+<text x="252" y="236" text-anchor="middle" font-size="9.5" fill="#166534">كلها صيغ موجّهة تشجّع إجابة معينة ⇒ السؤال متحيز</text>
+<defs><marker id="bL" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0,0 L0,8 L8,4 z" fill="#dc2626"/></marker></defs>
+</svg>`,
+
+fig_bias_double: `<svg class="svg-graph" width="500" height="260" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="250" rx="12" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#991b1b" font-weight="bold">✂️ سؤال مزدوج: مسألتان في سؤال واحد</text>
+<rect x="60" y="45" width="380" height="55" rx="12" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+<text x="250" y="68" text-anchor="middle" font-size="11.5" fill="#991b1b" font-weight="bold">«هل تعتقد أن المدرسة بحاجة إلى صالة رياضية</text>
+<text x="250" y="88" text-anchor="middle" font-size="11.5" fill="#991b1b" font-weight="bold">وملعب كرة قدم جديدين؟»</text>
+<line x1="250" y1="100" x2="160" y2="130" stroke="#dc2626" stroke-width="2"/>
+<line x1="250" y1="100" x2="340" y2="130" stroke="#dc2626" stroke-width="2"/>
+<text x="250" y="118" text-anchor="middle" font-size="16">✂️</text>
+<rect x="60" y="132" width="180" height="55" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="150" y="155" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">المسألة 1: الصالة الرياضية</text>
+<text x="150" y="175" text-anchor="middle" font-size="9.5" fill="#92400e">قد يريدها الشخص</text>
+<rect x="260" y="132" width="180" height="55" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="350" y="155" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">المسألة 2: ملعب كرة القدم</text>
+<text x="350" y="175" text-anchor="middle" font-size="9.5" fill="#92400e">قد لا يريده!</text>
+<rect x="60" y="198" width="380" height="46" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text x="250" y="217" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">الإصلاح: سؤالان منفصلان (واحد للصالة وآخر للملعب)</text>
+<text x="250" y="235" text-anchor="middle" font-size="9.5" fill="#166534">مثل: «هل تؤيد بناء صالة رياضية جديدة؟» و«هل تؤيد ملعباً جديداً؟»</text>
+</svg>`,
+
+fig_mcq_bias: `<svg class="svg-graph" width="500" height="280" viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="270" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="13" fill="#92400e" font-weight="bold">الاختيار من متعدد: ما السؤال غير المتحيز؟</text>
+<rect x="40" y="42" width="420" height="40" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+<text x="60" y="67" font-size="12" fill="#991b1b" font-weight="bold">A</text>
+<text x="85" y="67" font-size="10.5" fill="#991b1b">هل تحب الأيام مثل هذا اليوم؟</text>
+<text x="440" y="67" text-anchor="end" font-size="12" fill="#dc2626" font-weight="bold">✗ غامض وموجّه</text>
+<rect x="40" y="90" width="420" height="40" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+<text x="60" y="115" font-size="12" fill="#991b1b" font-weight="bold">B</text>
+<text x="85" y="115" font-size="10.5" fill="#991b1b">ما مدينة الألعاب المفضلة لك، A أم B؟</text>
+<text x="440" y="115" text-anchor="end" font-size="12" fill="#dc2626" font-weight="bold">✗ يقيّد الاختيارات</text>
+<rect x="40" y="138" width="420" height="40" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+<text x="60" y="163" font-size="12" fill="#991b1b" font-weight="bold">C</text>
+<text x="85" y="163" font-size="10.5" fill="#991b1b">ألا تعتقد أن طعم الجزر أفضل من طعم اللفت؟</text>
+<text x="440" y="163" text-anchor="end" font-size="12" fill="#dc2626" font-weight="bold">✗ «ألا تعتقد» موجّه</text>
+<rect x="40" y="186" width="420" height="44" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="3"/>
+<text x="60" y="213" font-size="12" fill="#166534" font-weight="bold">D</text>
+<text x="85" y="213" font-size="11" fill="#166534" font-weight="bold">ما معدل ذهابك إلى السينما؟</text>
+<text x="440" y="213" text-anchor="end" font-size="12" fill="#16a34a" font-weight="bold">✓ واضح ومحايد</text>
+<rect x="40" y="238" width="420" height="28" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="257" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">الإجابة الصحيحة: D</text>
+</svg>`,
+
+fig_exp_protein: `<svg class="svg-graph" width="500" height="300" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="290" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#5b21b6" font-weight="bold">⚗️ تصميم تجربة مسحوق البروتين</text>
+<rect x="160" y="40" width="180" height="40" rx="8" fill="#ddd6fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="250" y="57" text-anchor="middle" font-size="10.5" fill="#5b21b6" font-weight="bold">الهدف: هل يعزّز البروتين الأداء؟</text>
+<text x="250" y="72" text-anchor="middle" font-size="9" fill="#5b21b6">المجتمع: جميع الرياضيين</text>
+<line x1="250" y1="80" x2="250" y2="100" stroke="#7c3aed" stroke-width="2" marker-end="url(#eP)"/>
+<rect x="150" y="102" width="200" height="30" rx="8" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+<text x="250" y="122" text-anchor="middle" font-size="10.5" fill="#5b21b6" font-weight="bold">تقسيم عشوائي إلى مجموعتين متجانستين</text>
+<line x1="200" y1="132" x2="130" y2="155" stroke="#7c3aed" stroke-width="2"/>
+<line x1="300" y1="132" x2="370" y2="155" stroke="#7c3aed" stroke-width="2"/>
+<rect x="40" y="157" width="180" height="60" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="130" y="177" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">المجموعة التجريبية</text>
+<text x="130" y="195" text-anchor="middle" font-size="9.5" fill="#166534">رياضيون يُعطون مسحوق البروتين</text>
+<text x="130" y="210" text-anchor="middle" font-size="9" fill="#166534">🥤 بروتين</text>
+<rect x="280" y="157" width="180" height="60" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2.5"/>
+<text x="370" y="177" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">المجموعة الضابطة</text>
+<text x="370" y="195" text-anchor="middle" font-size="9.5" fill="#92400e">رياضيون يُعطون دواءً وهمياً</text>
+<text x="370" y="210" text-anchor="middle" font-size="9" fill="#92400e">💊 placebo</text>
+<line x1="130" y1="217" x2="200" y2="240" stroke="#16a34a" stroke-width="2"/>
+<line x1="370" y1="217" x2="300" y2="240" stroke="#f59e0b" stroke-width="2"/>
+<rect x="160" y="242" width="180" height="36" rx="8" fill="#fbcfe8" stroke="#ec4899" stroke-width="2"/>
+<text x="250" y="258" text-anchor="middle" font-size="10.5" fill="#9f1239" font-weight="bold">مقارنة نتائج اختبار الأداء</text>
+<text x="250" y="272" text-anchor="middle" font-size="9" fill="#9f1239">بعد شهر من التجربة</text>
+<defs><marker id="eP" markerWidth="8" markerHeight="8" refX="4" refY="7" orient="auto"><path d="M0,0 L8,0 L4,7 z" fill="#7c3aed"/></marker></defs>
+</svg>`,
+
+fig_error_vitamin: `<svg class="svg-graph" width="500" height="290" viewBox="0 0 500 290" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="490" height="280" rx="12" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="14" fill="#991b1b" font-weight="bold">⚠️ خطأ محتمل في تجربة الفيتامينات</text>
+<rect x="30" y="45" width="200" height="80" rx="8" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+<text x="130" y="65" text-anchor="middle" font-size="10.5" fill="#991b1b" font-weight="bold">المجموعة التجريبية</text>
+<text x="130" y="83" text-anchor="middle" font-size="9" fill="#991b1b">قد تكون: رياضيين 🏃</text>
+<text x="130" y="99" text-anchor="middle" font-size="9" fill="#991b1b">أو أصغر سناً</text>
+<text x="130" y="115" text-anchor="middle" font-size="9" fill="#991b1b">⇒ طاقة أعلى أصلاً!</text>
+<rect x="270" y="45" width="200" height="80" rx="8" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+<text x="370" y="65" text-anchor="middle" font-size="10.5" fill="#991b1b" font-weight="bold">المجموعة الضابطة</text>
+<text x="370" y="83" text-anchor="middle" font-size="9" fill="#991b1b">قد تكون: أقل نشاطاً</text>
+<text x="370" y="99" text-anchor="middle" font-size="9" fill="#991b1b">أو أكبر سناً</text>
+<text x="370" y="115" text-anchor="middle" font-size="9" fill="#991b1b">⇒ الفرق ليس الفيتامين!</text>
+<text x="250" y="145" text-anchor="middle" font-size="14" fill="#dc2626" font-weight="bold">≠ متغيرات مربكة</text>
+<rect x="30" y="158" width="440" height="60" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="178" text-anchor="middle" font-size="11" fill="#92400e" font-weight="bold">التصحيح: تعيين عشوائي للطلاب في المجموعتين</text>
+<text x="250" y="196" text-anchor="middle" font-size="10" fill="#92400e">مع مطابقة الخصائص (العمر، النشاط الرياضي) قبل البدء</text>
+<text x="250" y="210" text-anchor="middle" font-size="9.5" fill="#92400e">حتى يكون الفيتامين هو الفرق الوحيد بين المجموعتين</text>
+<rect x="30" y="228" width="440" height="46" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+<text x="250" y="247" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">💡 كذلك: عينة طلاب الجامعة لا تمثل طلاب المدارس</text>
+<text x="250" y="265" text-anchor="middle" font-size="9.5" fill="#166534">لا تُعمَّم النتائج على مجتمع مختلف عن مجتمع العينة</text>
+</svg>`,
+
+fig_jeans: `<svg class="svg-graph" width="500" height="240" viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg">
+<rect x="5" y="5" width="470" height="230" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+<text x="250" y="26" text-anchor="middle" font-size="13" fill="#065f46" font-weight="bold">👖 تجربة القمصان: هل تبهت الصبغة بعد 50 غسلة؟</text>
+<rect x="40" y="45" width="130" height="80" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+<text x="105" y="68" text-anchor="middle" font-size="10.5" fill="#065f46" font-weight="bold">الصيغة القديمة</text>
+<text x="105" y="90" text-anchor="middle" font-size="20">👖</text>
+<text x="105" y="115" text-anchor="middle" font-size="9" fill="#065f46">50 غسلة</text>
+<rect x="200" y="45" width="130" height="80" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+<text x="265" y="68" text-anchor="middle" font-size="10.5" fill="#065f46" font-weight="bold">الصيغة الجديدة</text>
+<text x="265" y="90" text-anchor="middle" font-size="20">👖</text>
+<text x="265" y="115" text-anchor="middle" font-size="9" fill="#065f46">50 غسلة</text>
+<rect x="360" y="45" width="100" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="2.5"/>
+<text x="410" y="70" text-anchor="middle" font-size="10.5" fill="#166534" font-weight="bold">مقارنة</text>
+<text x="410" y="90" text-anchor="middle" font-size="9.5" fill="#166534">درجة البهتان</text>
+<text x="410" y="108" text-anchor="middle" font-size="9.5" fill="#166534">بين القماشتين</text>
+<rect x="40" y="140" width="420" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+<text x="250" y="160" text-anchor="middle" font-size="10.5" fill="#92400e" font-weight="bold">لماذا تجربة وليس دراسة مسحية؟</text>
+<text x="250" y="180" text-anchor="middle" font-size="10" fill="#92400e">لأن الشركة تفرض معالجة (الغسل بالصيغتين) وتتحكم بالظروف</text>
+<text x="250" y="198" text-anchor="middle" font-size="10" fill="#92400e">ثم تقارن النتيجتين — المعالجة هي «نوع الصيغة المستخدمة»</text>
+<text x="250" y="214" text-anchor="middle" font-size="9" fill="#92400e">العينة: أقمصة بالصيغة الجديدة | المجتمع: كل الأقمصة المنتجة</text>
+</svg>`
+};
+
+// ==================== EXAM DATA ====================
+const originalExamData = {
+sections: [
+{ id:'s1', title:{ar:'🔹 القسم 1: تصنيف نوع الدراسة (مثل مثال 1 والفرضيات) (Q1-Q5)',en:'🔹 Section 1: Classifying Study Type (like Ex.1) (Q1-Q5)'}, questions:[
+{ q:{ar:'<strong>السؤال 1 (مثال 1a - أشيد):</strong> شركة تسجيلات تختار عشوائياً 50 مراهقاً لعرض ثلاثة تصاميم أغلفة عليهم ومشاهدة ردود أفعالهم وتسجيلها. ما نوع الدراسة؟',en:'<strong>Q1 (Ex.1a):</strong> A record company randomly selects 50 teens to show 3 album covers and observe their reactions. Study type?'},
+  svg: svgGraphs.fig_decision,
+  options:[{ar:'تجربة',en:'Experiment'},{ar:'استطلاع',en:'Survey'},{ar:'دراسة مسحية (قائمة على الملاحظة)',en:'Observational study'},{ar:'تعداد',en:'Census'}],
+  correct:2, answer:{ar:'الشركة تراقب المراهقين دون أن يخضعوا لأي تأثير متعلق بالدراسة ⇒ دراسة مسحية (ملاحظة)',en:'Company watches teens without imposing anything ⇒ observational study'} },
+{ q:{ar:'<strong>السؤال 2 (مثال 1b - إعادة التدوير):</strong> مجلس المدينة يرسل استبياناً إلى 200 مواطن عشوائي يسألونهم فيه عن الأشياء التي يرغبون بإعادة تدويرها. ما نوع الدراسة؟',en:'<strong>Q2 (Ex.1b):</strong> City council sends a questionnaire to 200 random citizens about recycling preferences. Study type?'},
+  options:[{ar:'تجربة',en:'Experiment'},{ar:'استطلاع',en:'Survey'},{ar:'دراسة مسحية (ملاحظة)',en:'Observational study'},{ar:'تعداد',en:'Census'}],
+  correct:1, answer:{ar:'البيانات يجري تجميعها من إجابات المشاركين في الاستبيان ⇒ استطلاع',en:'Data collected from questionnaire responses ⇒ survey'} },
+{ q:{ar:'<strong>السؤال 3 (تمرين 1A):</strong> عالمة تدرس سلوك مجموعتي فئران في متاهة: مجموعة عولجت بدواء للقلب وأخرى بدواء وهمي. ما نوع الدراسة؟',en:'<strong>Q3 (Ex.1A):</strong> A researcher studies two groups of mice in a maze: one treated with a heart drug, one with a placebo. Study type?'},
+  options:[{ar:'تجربة',en:'Experiment'},{ar:'استطلاع',en:'Survey'},{ar:'دراسة مسحية (ملاحظة)',en:'Observational study'},{ar:'تعداد',en:'Census'}],
+  correct:0, answer:{ar:'فُرضت معالجة (دواء مقابل دواء وهمي) وقورنت المجموعتان ⇒ تجربة',en:'Treatment imposed and groups compared ⇒ experiment'} },
+{ q:{ar:'<strong>السؤال 4 (البيع بالتجزئة):</strong> شركة تخطط لدراسة تحديد ما إذا كانت الصبغة المستخدمة على قمصان جديدة ستبهت بعد 50 غسلة أم لا. ما نوع الدراسة؟',en:'<strong>Q4 (Retail):</strong> A company studies whether new-jeans dye fades after 50 washes. Study type?'},
+  svg: svgGraphs.fig_jeans,
+  options:[{ar:'دراسة مسحية (ملاحظة)',en:'Observational study'},{ar:'استطلاع',en:'Survey'},{ar:'تجربة',en:'Experiment'},{ar:'تعداد',en:'Census'}],
+  correct:2, answer:{ar:'سوف تُفرض معالجة (غسل الأقمشة بالصيغة الجديدة) ويلاحظ أثرها ⇒ تجربة',en:'A treatment (washing) is imposed and its effect observed ⇒ experiment'} },
+{ q:{ar:'<strong>السؤال 5 (مجو الأمية):</strong> مجموعة تريد معرفة ما إذا كان طلاب الثانوية المشاركين في برنامج القراءة الوطني حصلوا على درجات أعلى من غير المشاركين. ما نوع الدراسة؟',en:'<strong>Q5 (Honor Society):</strong> A group compares test scores of 11th graders who participated in a reading program vs those who did not. Study type?'},
+  options:[{ar:'تجربة',en:'Experiment'},{ar:'استطلاع',en:'Survey'},{ar:'دراسة مسحية (ملاحظة)',en:'Observational study'},{ar:'تعداد',en:'Census'}],
+  correct:2, answer:{ar:'لا تُفرض معالجة؛ الباحث يقارن مجموعات موجودة طبيعياً باختياراتها ⇒ دراسة مسحية',en:'No treatment imposed; comparing naturally existing groups ⇒ observational study'} }
+]},
+{ id:'s2', title:{ar:'🔹 القسم 2: العينة والمجتمع الإحصائي (Q6-Q10)',en:'🔹 Section 2: Sample & Population (Q6-Q10)'}, questions:[
+{ q:{ar:'<strong>السؤال 6:</strong> في دراسة أشيد (الأغلفة)، ما العينة؟',en:'<strong>Q6:</strong> In the album-cover study, what is the sample?'},
+  svg: svgGraphs.fig_sample_pop,
+  options:[{ar:'الـ 50 مراهقاً الذين وقع الاختيار عليهم',en:'The 50 teens selected'},{ar:'كل المراهقين في المدينة',en:'All teens in the city'},{ar:'تصاميم الأغلفة الثلاثة',en:'The three album covers'},{ar:'موظفو الشركة',en:'Company employees'}],
+  correct:0, answer:{ar:'العينة هي الـ 50 مراهقاً الذين وقع الاختيار عليهم',en:'Sample = the 50 selected teens'} },
+{ q:{ar:'<strong>السؤال 7:</strong> في دراسة أشيد، ما المجتمع الإحصائي؟',en:'<strong>Q7:</strong> In the album-cover study, what is the population?'},
+  options:[{ar:'الـ 50 مراهقاً',en:'The 50 teens'},{ar:'كل المشترين المحتملين لهذا الألبوم',en:'All potential buyers of the album'},{ar:'المدارس الثانوية المحلية',en:'Local high schools'},{ar:'مصممو الأغلفة',en:'Cover designers'}],
+  correct:1, answer:{ar:'المجتمع هو كل المشترين المحتملين للألبوم',en:'Population = all potential buyers'} },
+{ q:{ar:'<strong>السؤال 8:</strong> في دراسة إعادة التدوير، ما المجتمع الإحصائي؟',en:'<strong>Q8:</strong> In the recycling study, what is the population?'},
+  options:[{ar:'الـ 200 مواطن الذين استجابوا',en:'The 200 citizens who responded'},{ar:'كافة مواطني المدينة',en:'All city citizens'},{ar:'أعضاء مجلس المدينة',en:'City council members'},{ar:'شركات إعادة التدوير',en:'Recycling companies'}],
+  correct:1, answer:{ar:'المجتمع الإحصائي هو كافة مواطني المدينة',en:'Population = all city citizens'} },
+{ q:{ar:'<strong>السؤال 9 (تمرين 1A):</strong> في تجربة الفئران، ما العينة؟',en:'<strong>Q9 (Ex.1A):</strong> In the mice experiment, what is the sample?'},
+  options:[{ar:'جميع الفئران',en:'All mice'},{ar:'الفئران التي تم إعطاؤها علاجاً للقلب',en:'The mice given the heart treatment'},{ar:'الفئران التي أعطيت دواءً وهمياً',en:'The mice given placebo'},{ar:'الفئران المخططة',en:'The planned mice'}],
+  correct:1, answer:{ar:'العينة: الفئران التي تم إعطاؤها علاجاً للقلب (المجتمع: جميع الفئران)',en:'Sample = treated mice; population = all mice'} },
+{ q:{ar:'<strong>السؤال 10 (السيارات):</strong> مصنع سيارات يريد تحديد مقدار الطلب على السيارات الهجينة في الإمارات. ما المجتمع الإحصائي المقترح؟',en:'<strong>Q10 (Cars):</strong> A manufacturer wants to determine demand for hybrid cars in the UAE. Suggested population?'},
+  options:[{ar:'موظفو المصنع',en:'Factory employees'},{ar:'الأشخاص المهتمون بالسيارات في الإمارات',en:'People interested in cars in the UAE'},{ar:'السيارات الهجينة فقط',en:'Hybrid cars only'},{ar:'بائعو السيارات المستعملة',en:'Used-car dealers'}],
+  correct:1, answer:{ar:'المجتمع: الأشخاص المهتمون بالسيارات في الإمارات (الفئة المستهدفة للطلب)',en:'Population = people interested in cars in the UAE'} }
+]},
+{ id:'s3', title:{ar:'🔹 القسم 3: تحديد التحيز في الأسئلة (Q11-Q15)',en:'🔹 Section 3: Identifying Question Bias (Q11-Q15)'}, questions:[
+{ q:{ar:'<strong>السؤال 11:</strong> «ألا توافق بأنه ينبغي مرافقة الكبار للطلاب الصغار عند ذهابهم إلى المدرسة؟»',en:'<strong>Q11:</strong> "Don\'t you agree that adults should escort young students to school?"'},
+  svg: svgGraphs.fig_bias_leading,
+  options:[{ar:'غير متحيز؛ واضح',en:'Unbiased; clear'},{ar:'متحيز؛ لأنه يشجّع على إجابة معينة (الموافقة)',en:'Biased; encourages a particular answer (agreement)'},{ar:'متحيز؛ لأنه يتناول مسألتين',en:'Biased; two issues'},{ar:'غير متحيز؛ مفتوح',en:'Unbiased; open'}],
+  correct:1, answer:{ar:'عبارة «ألا توافق» تقترح على الشخص أن يوافق ⇒ متحيز (موجّه)',en:'"Don\'t you agree" pushes agreement ⇒ biased (leading)'} },
+{ q:{ar:'<strong>السؤال 12:</strong> «هل تفضل مشاهدة أفلام الحركة المشوقة أم الأفلام الوثائقية المملة؟»',en:'<strong>Q12:</strong> "Do you prefer exciting action movies or boring documentaries?"'},
+  options:[{ar:'غير متحيز؛ مقارن',en:'Unbiased; comparative'},{ar:'غير متحيز؛ واضح',en:'Unbiased; clear'},{ar:'متحيز؛ لأنه قد لا يفضّل أي نوع منهما (وصف موجّه)', en:'Biased; may prefer neither (loaded wording)'},{ar:'متحيز؛ لأنه يشجّع الموافقة',en:'Biased; encourages agreement'}],
+  correct:2, answer:{ar:'السؤال يفترض اختيار أحد النوعين وقد لا يفضّل الشخص أياً منهما، مع صفات موجّهة (مشوقة/مملة) ⇒ متحيز',en:'Forces a choice between two and uses loaded adjectives ⇒ biased'} },
+{ q:{ar:'<strong>السؤال 13:</strong> «هل تعتقد أن المدرسة بحاجة إلى صالة رياضية وملعب كرة قدم جديدين؟»',en:'<strong>Q13:</strong> "Do you think the school needs a new gym and a new football field?"'},
+  svg: svgGraphs.fig_bias_double,
+  options:[{ar:'متحيز؛ لأنه يتناول أكثر من مسألة واحدة',en:'Biased; addresses more than one issue'},{ar:'غير متحيز؛ واضح',en:'Unbiased; clear'},{ar:'متحيز؛ صياغة سالبة',en:'Biased; negative wording'},{ar:'غير متحيز؛ شامل',en:'Unbiased; comprehensive'}],
+  correct:0, answer:{ar:'يسأل عن قضيتين (صالة وملعب) في سؤال واحد ⇒ متحيز مزدوج',en:'Asks two issues in one question ⇒ double-barreled biased'} },
+{ q:{ar:'<strong>السؤال 14 (3A):</strong> «كم كأساً من الماء تشرب يومياً؟»',en:'<strong>Q14 (3A):</strong> "How many glasses of water do you drink daily?"'},
+  options:[{ar:'متحيز؛ يشجّع كمية كبيرة',en:'Biased; encourages large amount'},{ar:'غير متحيز؛ لأنه واضح ولا يشجّع على إجابة معينة',en:'Unbiased; clear and does not encourage a particular answer'},{ar:'متحيز؛ مسألتان',en:'Biased; two issues'},{ar:'غير متحيز؛ لأنه رقمي فقط',en:'Unbiased; because numeric only'}],
+  correct:1, answer:{ar:'سؤال قياس واضح ومحايد ⇒ غير متحيز',en:'Clear neutral measurement question ⇒ unbiased'} },
+{ q:{ar:'<strong>السؤال 15:</strong> «ما مقدار ممارستك للتمارين الرياضية؟»',en:'<strong>Q15:</strong> "How much do you practice sports exercises?"'},
+  options:[{ar:'متحيز؛ يشجّع على الرياضة',en:'Biased; encourages sports'},{ar:'غير متحيز؛ لأنه مغلق',en:'Unbiased; because closed'},{ar:'غير متحيز؛ لأنه واضح ولا يشجّع على إجابة معينة',en:'Unbiased; clear and does not encourage a particular answer'},{ar:'متحيز؛ غامض',en:'Biased; vague'}],
+  correct:2, answer:{ar:'واضح ومحايد ولا يوحي بإجابة ⇒ غير متحيز',en:'Clear, neutral, no suggested answer ⇒ unbiased'} }
+]},
+{ id:'s4', title:{ar:'🔹 القسم 4: اختيار من متعدد على التحيز (Q16-Q20)',en:'🔹 Section 4: Multiple-Choice on Bias (Q16-Q20)'}, questions:[
+{ q:{ar:'<strong>السؤال 16:</strong> ما السؤال غير المتحيز في الاستطلاع؟',en:'<strong>Q16:</strong> Which survey question is unbiased?'},
+  svg: svgGraphs.fig_mcq_bias,
+  options:[{ar:'هل تحب الأيام مثل هذا اليوم؟',en:'Do you like days like this day?'},{ar:'ما مدينة الألعاب المفضلة لك، A أم B؟',en:'Which is your favorite game city, A or B?'},{ar:'ألا تعتقد أن طعم الجزر أفضل من طعم اللفت؟',en:'Don\'t you think carrots taste better than turnips?'},{ar:'ما معدل ذهابك إلى السينما؟',en:'How often do you go to the cinema?'}],
+  correct:3, answer:{ar:'D واضح ومحايد ولا يشجّع إجابة معينة؛ البقية موجّهة أو مقيّدة',en:'D is clear and neutral; others are leading or restrictive'} },
+{ q:{ar:'<strong>السؤال 17:</strong> «ما فريق كرة القدم الذي تشجعه، برشلونة أم ريال مدريد؟»',en:'<strong>Q17:</strong> "Which football team do you cheer for, Barcelona or Real Madrid?"'},
+  options:[{ar:'متحيز؛ لأنه يطرح خيارين فقط ويقيّد الإجابة',en:'Biased; offers only two options, restricting the answer'},{ar:'غير متحيز؛ واضح',en:'Unbiased; clear'},{ar:'متحيز؛ يشجّع الموافقة',en:'Biased; encourages agreement'},{ar:'غير متحيز؛ مقارن',en:'Unbiased; comparative'}],
+  correct:0, answer:{ar:'يطرح خيارين فقط فقد يشجع الشخص فريقاً آخر ⇒ متحيز',en:'Restricts to two choices; may support another team ⇒ biased'} },
+{ q:{ar:'<strong>السؤال 18:</strong> «ما برنامج مرشح اتحاد الطلاب الذي تؤيده؟»',en:'<strong>Q18:</strong> "Which student-union candidate program do you support?"'},
+  options:[{ar:'متحيز؛ يشجّع التأييد',en:'Biased; encourages support'},{ar:'غير متحيز؛ لأنه واضح ولا يشجّع على إجابة معينة',en:'Unbiased; clear and does not encourage a particular answer'},{ar:'متحيز؛ مسألتان',en:'Biased; two issues'},{ar:'غير متحيز؛ لأنه مفتوح فقط',en:'Unbiased; because open only'}],
+  correct:1, answer:{ar:'سؤال واضح ومحايد يترك الحرية للإجابة ⇒ غير متحيز',en:'Clear neutral question leaving freedom ⇒ unbiased'} },
+{ q:{ar:'<strong>السؤال 19:</strong> «منذ متى وأنت تعيش في عنوان سكنك الحالي؟»',en:'<strong>Q19:</strong> "Since when have you been living at your current address?"'},
+  options:[{ar:'غير متحيز؛ سؤال حقائق واضح',en:'Unbiased; clear factual question'},{ar:'متحيز؛ يشجّع على الانتقال',en:'Biased; encourages moving'},{ar:'متحيز؛ مسألتان',en:'Biased; two issues'},{ar:'غير متحيز؛ لأنه نعم/لا',en:'Unbiased; because yes/no'}],
+  correct:0, answer:{ar:'سؤال حقائق مباشر لا يوحي بإجابة ⇒ غير متحيز',en:'Direct factual question with no suggestion ⇒ unbiased'} },
+{ q:{ar:'<strong>السؤال 20:</strong> يكون سؤال الاستطلاع متحيزاً عندما:',en:'<strong>Q20:</strong> A survey question is biased when:'},
+  options:[{ar:'يكون واضحاً وبسيطاً',en:'It is clear and simple'},{ar:'يشجّع على إجابة معينة أو يتناول أكثر من مسألة',en:'It encourages a particular answer or addresses more than one issue'},{ar:'يكون مفتوح النهاية',en:'It is open-ended'},{ar:'يوجّه لعينة كبيرة',en:'It targets a large sample'}],
+  correct:1, answer:{ar:'التحيز نوعان: توجيه لإجابة معينة، أو دمج أكثر من مسألة',en:'Bias = leading to an answer or merging multiple issues'} }
+]},
+{ id:'s5', title:{ar:'🔹 القسم 5: تصميم التجارب وأخطاؤها (Q21-Q25)',en:'🔹 Section 5: Experiment Design & Errors (Q21-Q25)'}, questions:[
+{ q:{ar:'<strong>السؤال 21:</strong> في تجربة الفيتامينات: حصلت المجموعة التجريبية على درجات أعلى. ما الخطأ المحتمل في إعداد التجربة؟',en:'<strong>Q21:</strong> In the vitamin experiment the treatment group scored higher. What is the possible design error?'},
+  svg: svgGraphs.fig_error_vitamin,
+  options:[{ar:'استخدام دواء وهمي',en:'Using a placebo'},{ar:'احتمال اختلاف المجموعتين بمتغيرات أخرى (نشاط رياضي، عمر) لعدم العشوائية',en:'Groups may differ in other variables (activity, age) due to lack of randomness'},{ar:'وجود مجموعة ضابطة',en:'Having a control group'},{ar:'كبر حجم العينة',en:'Large sample size'}],
+  correct:1, answer:{ar:'قد تكون المجموعة التجريبية رياضيين أو أصغر سناً ⇒ الفرق ليس بسبب الفيتامين وحده (متغيرات مربكة)',en:'Treatment group may be athletes/younger ⇒ difference not solely from vitamin (confounders)'} },
+{ q:{ar:'<strong>السؤال 22:</strong> كيف يمكن تصحيح الخطأ في تجربة الفيتامينات؟',en:'<strong>Q22:</strong> How can the vitamin-experiment error be corrected?'},
+  options:[{ar:'تعيين عشوائي للطلاب في المجموعتين مع مطابقة خصائصهم',en:'Randomly assign students to the two groups with matched characteristics'},{ar:'زيادة جرعة الفيتامين',en:'Increase vitamin dose'},{ar:'إلغاء المجموعة الضابطة',en:'Remove the control group'},{ar:'اختيار رياضيين فقط',en:'Select only athletes'}],
+  correct:0, answer:{ar:'العشوائية والمطابقة تجعلان الفيتامين الفرق الوحيد بين المجموعتين',en:'Randomization & matching make the vitamin the only difference'} },
+{ q:{ar:'<strong>السؤال 23 (رياضة):</strong> في تجربة مسحوق البروتين: ما المجموعة التجريبية؟',en:'<strong>Q23 (Sports):</strong> In the protein-powder experiment: what is the treatment group?'},
+  svg: svgGraphs.fig_exp_protein,
+  options:[{ar:'الرياضيون الذين يُعطون دواءً وهمياً',en:'Athletes given a placebo'},{ar:'الرياضيون الذين تم إعطاؤهم مسحوق البروتين',en:'Athletes given the protein powder'},{ar:'جميع الرياضيين',en:'All athletes'},{ar:'الباحثون',en:'The researchers'}],
+  correct:1, answer:{ar:'المجموعة التجريبية: الرياضيون الذين يُعطون مسحوق البروتين',en:'Treatment group = athletes receiving protein powder'} },
+{ q:{ar:'<strong>السؤال 24:</strong> في تجربة البروتين: ما المجموعة الضابطة؟',en:'<strong>Q24:</strong> In the protein experiment: what is the control group?'},
+  options:[{ar:'الرياضيون الذين يُعطون دواءً وهمياً',en:'Athletes given a placebo'},{ar:'الرياضيون الذين يُعطون البروتين',en:'Athletes given protein'},{ar:'غير الرياضيين',en:'Non-athletes'},{ar:'المدربون',en:'Coaches'}],
+  correct:0, answer:{ar:'المجموعة الضابطة: رياضيون يُعطون دواءً وهمياً للمقارنة',en:'Control group = athletes given placebo for comparison'} },
+{ q:{ar:'<strong>السؤال 25:</strong> ما الهدف من تجربة مسحوق البروتين؟',en:'<strong>Q25:</strong> What is the purpose of the protein-powder experiment?'},
+  options:[{ar:'بيع مسحوق البروتين',en:'Selling protein powder'},{ar:'اختبار ما إذا كان مسحوق البروتين يعزّز أداء الرياضيين',en:'Testing whether protein powder enhances athletes\' performance'},{ar:'تحديد عدد الرياضيين',en:'Counting athletes'},{ar:'مقارنة أنواع الأطعمة',en:'Comparing food types'}],
+  correct:1, answer:{ar:'الهدف: اختبار ما إذا كان مسحوق البروتين يعزّز أداء الرياضيين',en:'Purpose: test whether protein powder enhances performance'} }
+]},
+{ id:'s6', title:{ar:'🔹 القسم 6: مفاهيم وتطبيقات مركبة (Q26-Q30)',en:'🔹 Section 6: Concepts & Mixed Applications (Q26-Q30)'}, questions:[
+{ q:{ar:'<strong>السؤال 26:</strong> أي نوع من الدراسات يمكنه إثبات علاقة سببية (سبب ونتيجة)؟',en:'<strong>Q26:</strong> Which study type can establish cause-and-effect?'},
+  options:[{ar:'التجربة',en:'Experiment'},{ar:'الاستطلاع',en:'Survey'},{ar:'الدراسة المسحية',en:'Observational study'},{ar:'التعداد',en:'Census'}],
+  correct:0, answer:{ar:'التجربة وحدها تتحكم بالمتغيرات وتفرض معالجة ⇒ تثبت السببية',en:'Only experiments control variables and impose treatment ⇒ causality'} },
+{ q:{ar:'<strong>السؤال 27:</strong> في تجربة القمصان (الصبغة بعد 50 غسلة)، ما المعالجة (العامل المختبَر)؟',en:'<strong>Q27:</strong> In the jeans-dye experiment, what is the treatment (tested factor)?'},
+  options:[{ar:'عدد القمصان',en:'Number of jeans'},{ar:'نوع صيغة القماش (الجديدة مقابل القديمة)',en:'Type of fabric formula (new vs old)'},{ar:'درجة حرارة الغسل',en:'Washing temperature'},{ar:'موقع المتجر',en:'Store location'}],
+  correct:1, answer:{ar:'العامل المختبر هو الصيغة الجديدة للصبغة مقابل القديمة',en:'Tested factor = new dye formula vs old'} },
+{ q:{ar:'<strong>السؤال 28 (1B):</strong> لجنة الكتاب السنوي تريد تحديد ما إذا كان الطلاب يفضلون نسخة مطبوعة أم رقمية. ما أنسب نوع دراسة؟',en:'<strong>Q28 (1B):</strong> The yearbook committee wants to know if students prefer printed or digital copies. Best study type?'},
+  options:[{ar:'استطلاع',en:'Survey'},{ar:'تجربة',en:'Experiment'},{ar:'دراسة مسحية (ملاحظة)',en:'Observational study'},{ar:'تعداد',en:'Census'}],
+  correct:0, answer:{ar:'الأفضلية تُجمع بسؤال الطلاب مباشرة ⇒ استطلاع (العينة: المشاركون، المجتمع: جميع طلاب المدرسة)',en:'Preferences collected by asking ⇒ survey'} },
+{ q:{ar:'<strong>السؤال 29:</strong> أي الأسئلة الآتية مزدوج (يتناول أكثر من مسألة)؟',en:'<strong>Q29:</strong> Which question is double-barreled (addresses more than one issue)?'},
+  options:[{ar:'هل تعتقد أن المدرسة بحاجة إلى صالة رياضية وملعب كرة قدم جديدين؟',en:'Does the school need a new gym and a new football field?'},{ar:'كم كأساً من الماء تشرب يومياً؟',en:'How many glasses of water do you drink daily?'},{ar:'ما مادتك المفضلة؟',en:'What is your favorite subject?'},{ar:'كم مرة تزور المكتبة أسبوعياً؟',en:'How often do you visit the library weekly?'}],
+  correct:0, answer:{ar:'يدمج قضيتين (صالة + ملعب) في سؤال واحد ⇒ مزدوج متحيز',en:'Merges two issues in one question ⇒ double-barreled'} },
+{ q:{ar:'<strong>السؤال 30:</strong> في دراسة إعادة التدوير، لماذا صُنّفت استطلاعاً وليس دراسة مسحية (ملاحظة)؟',en:'<strong>Q30:</strong> Why is the recycling study a survey and not an observational study?'},
+  options:[{ar:'لأن المجلس يراقب المواطنين',en:'Because the council watches citizens'},{ar:'لأن البيانات جُمعت مباشرة من إجابات الاستبيان',en:'Because data was collected directly from questionnaire responses'},{ar:'لأنه فُرضت معالجة على المواطنين',en:'Because a treatment was imposed on citizens'},{ar:'لأنه شمل كل المواطنين',en:'Because it included all citizens'}],
+  correct:1, answer:{ar:'البيانات جاءت من إجابات المشاركين في الاستبيان وليس من مراقبة سلوكهم',en:'Data came from responses, not from observing behavior'} }
+]}
+]};
+
+function shuffleArray(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[r[i],r[j]]=[r[j],r[i]]}return r}
+function prepareShuffledExam(){rng=mulberry32(currentSeed);examData=JSON.parse(JSON.stringify(originalExamData));correctAnswersMap={};let g=0;examData.sections.forEach(s=>{s.questions=shuffleArray(s.questions);s.questions.forEach(q=>{const oc=q.options.map((o,i)=>({option:o,isCorrect:i===q.correct}));const sh=shuffleArray(oc);q.options=sh.map(o=>o.option);q.correct=sh.findIndex(o=>o.isCorrect);correctAnswersMap[g]=String.fromCharCode(97+q.correct);g++})})}
+function reshuffleExam(){if(confirm(currentLang==='ar'?'🔄 سيتم إنشاء أسئلة جديدة ومسح إجاباتك. هل أنت متأكد؟':'🔄 New questions will be generated. Are you sure?')){currentSeed=Date.now();timeRemaining=TOTAL_TIME;answersVisible=false;prepareShuffledExam();renderExam();saveState();alert(currentLang==='ar'?'🎲 تم تغيير الأسئلة! حظاً موفقاً! 🍀':' Questions changed! Good luck! 🍀');window.scrollTo({top:0,behavior:'smooth'})}}
+function setLanguage(lang){currentLang=lang;document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.getElementById('btn-ar').classList.toggle('active',lang==='ar');document.getElementById('btn-en').classList.toggle('active',lang==='en');document.body.classList.toggle('en-mode',lang==='en');document.querySelectorAll('[data-ar]').forEach(el=>{el.textContent=el.getAttribute('data-'+lang)});document.querySelectorAll('[data-placeholder-ar]').forEach(el=>{el.placeholder=el.getAttribute('data-placeholder-'+lang)});renderExam();saveState(false)}
+function renderExam(){const container=document.getElementById('exam-content');const lbl={option:['a)','b)','c)','d)'],answer:currentLang==='ar'?'✅ الإجابة:':'✅ Answer:'};let html='',g=0;
+examData.sections.forEach((section,si)=>{const bc=['module-1','module-2','module-3','module-4','module-5','module-6'][si];html+='<section class="bg-white p-6 rounded-2xl shadow-lg border-2 border-green-100"><div class="text-center mb-4"><span class="module-badge '+bc+'">'+section.title[currentLang]+'</span></div><ol class="space-y-4 text-sm">';
+section.questions.forEach(q=>{html+='<li class="border-r-4 border-green-500 pr-4 py-2" id="q-'+g+'" style="border-right:4px solid #15803d;padding-right:1rem;"><strong class="text-green-700">'+(g+1)+'.</strong> '+q.q[currentLang]+'<br>';
+if(q.svg)html+='<div class="graph-container">'+q.svg+'</div>';
+q.options.forEach((opt,oi)=>{html+='<label class="cursor-pointer block mt-2 mr-4 hover:bg-green-50 rounded-lg p-2 transition" style="margin-right:1rem;"><input type="radio" name="q'+g+'" value="'+String.fromCharCode(97+oi)+'" class="mr-2 ml-2"><span class="arabic-math">'+lbl.option[oi]+' '+opt[currentLang]+'</span></label>'});
+html+='<div class="answer-box text-green-700 mt-3 font-medium '+(answersVisible?'':'hidden')+' bg-green-50 rounded-lg p-3 border border-green-200">'+lbl.answer+' '+lbl.option[q.correct]+' <span class="arabic-math">'+q.options[q.correct][currentLang]+'</span><br><span class="text-sm text-green-700 mt-2 block arabic-math">'+q.answer[currentLang]+'</span></div></li>';g++});
+html+='</ol></section>'});
+container.innerHTML=html}
+function startTimer(){updateTimerDisplay();timerInterval=setInterval(()=>{timeRemaining--;updateTimerDisplay();if(timeRemaining%60===0)saveState(false);if(timeRemaining<=600)document.getElementById('timer').classList.add('timer-warning');if(timeRemaining<=0){clearInterval(timerInterval);alert(currentLang==='ar'?'⏰ انتهى الوقت!':"⏰ Time's up!");gradeExam()}},1000)}
+function updateTimerDisplay(){const m=Math.floor(timeRemaining/60),s=timeRemaining%60;document.getElementById('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')}
+function toggleAnswers(){answersVisible=!answersVisible;document.querySelectorAll('.answer-box').forEach(el=>el.classList.toggle('hidden',!answersVisible));saveState(false)}
+function gradeExam(){let cc=0;const ss=new Array(TOTAL_SECTIONS).fill(0);
+for(let i=0;i<TOTAL_QUESTIONS;i++){const sel=document.querySelector('input[name="q'+i+'"]:checked');const li=document.getElementById('q-'+i);if(li){const ok=sel&&sel.value===correctAnswersMap[i];if(ok){cc++;li.classList.add('correct');li.classList.remove('incorrect');ss[Math.floor(i/QUESTIONS_PER_SECTION)]++}else{li.classList.add('incorrect');li.classList.remove('correct')}}}
+const score=Math.round(cc/TOTAL_QUESTIONS*100);document.getElementById('res-total').textContent=score+' / 100';document.getElementById('res-name').textContent=document.getElementById('studentName').value||(currentLang==='ar'?'بطل':'Champion');document.getElementById('res-date').textContent=new Date().toLocaleDateString(currentLang==='ar'?'ar-AE':'en-US');
+const pc=document.getElementById('sections-performance');pc.innerHTML='';examData.sections.forEach((s,i)=>{pc.innerHTML+='<div class="flex justify-between items-center p-3 bg-white rounded-lg"><span class="text-gray-700">'+s.title[currentLang]+'</span><span class="font-bold text-green-700">'+ss[i]+'/'+QUESTIONS_PER_SECTION+'</span></div>'});
+const badge=document.getElementById('success-badge');document.getElementById('success-percent').textContent=score+'%';
+if(currentLang==='ar'){if(score>=90){badge.textContent='🌟 ممتاز جداً!';badge.className='success-badge grade-excellent'}else if(score>=75){badge.textContent='👏 ممتاز!';badge.className='success-badge grade-good'}else if(score>=50){badge.textContent='👍 جيد';badge.className='success-badge grade-pass'}else{badge.textContent='💪 حاول مرة أخرى';badge.className='success-badge grade-fail'}}
+else{if(score>=90){badge.textContent='🌟 Outstanding!';badge.className='success-badge grade-excellent'}else if(score>=75){badge.textContent='👏 Excellent!';badge.className='success-badge grade-good'}else if(score>=50){badge.textContent='👍 Good';badge.className='success-badge grade-pass'}else{badge.textContent='💪 Try Again';badge.className='success-badge grade-fail'}}
+document.getElementById('results-panel').classList.remove('hidden');document.getElementById('results-panel').scrollIntoView({behavior:'smooth'});if(timerInterval)clearInterval(timerInterval)}
+function sendResultsToEmail(){const btn=document.getElementById('sendEmailBtn'),status=document.getElementById('emailStatus');btn.disabled=true;btn.textContent=currentLang==='ar'?'⏳ جاري الإرسال...':'⏳ Sending...';
+const name=document.getElementById('studentName').value||'N/A',klass=document.getElementById('studentClass').value||'N/A',date=document.getElementById('examDate').value||new Date().toLocaleDateString(),score=document.getElementById('res-total').textContent,rate=document.getElementById('success-percent').textContent,badge=document.getElementById('success-badge').textContent;
+let qh='<div style="font-family:Arial;direction:rtl"><h2>📊 '+(currentLang==='ar'?'نتيجة امتحان تصميم الدراسات الإحصائية - رياضيات 12 عام':'Study Design Exam Result - Grade 12')+'</h2><p><b>الاسم:</b> '+name+'</p><p><b>الشعبة:</b> '+klass+'</p><p><b>التاريخ:</b> '+date+'</p><p><b>الدرجة:</b> '+score+' ('+rate+')</p><p><b>التقدير:</b> '+badge+'</p><hr><table style="width:100%;border-collapse:collapse"><tr style="background:#15803d;color:white"><th style="padding:8px;border:1px solid #ddd">#</th><th style="padding:8px;border:1px solid #ddd">السؤال</th><th style="padding:8px;border:1px solid #ddd">إجابة الطالب</th><th style="padding:8px;border:1px solid #ddd">الصحيحة</th><th style="padding:8px;border:1px solid #ddd">النتيجة</th></tr>';
+let g=0;examData.sections.forEach(sec=>{qh+='<tr style="background:#dcfce7"><td colspan="5" style="padding:8px;font-weight:bold;border:1px solid #ddd">'+sec.title.ar+'</td></tr>';sec.questions.forEach(q=>{const sel=document.querySelector('input[name="q'+g+'"]:checked');const sv=sel?sel.value:null;const cv=correctAnswersMap[g];const ic=sv===cv;let sat=sv?q.options[sv.charCodeAt(0)-97][currentLang]:(currentLang==='ar'?'❌ لم يجب':'❌ No answer');const sac=ic?'#16a34a':'#dc2626';const cat=q.options[q.correct][currentLang];const rb=ic?'#f0fdf4':'#fef2f2';qh+='<tr style="background:'+rb+'"><td style="padding:8px;border:1px solid #ddd;text-align:center">'+(g+1)+'</td><td style="padding:8px;border:1px solid #ddd">'+q.q.ar.replace(/<[^>]+>/g,'').substring(0,70)+'...</td><td style="padding:8px;border:1px solid #ddd;color:'+sac+'">'+sat+'</td><td style="padding:8px;border:1px solid #ddd;color:#16a34a">'+cat+'</td><td style="padding:8px;border:1px solid #ddd;text-align:center">'+(ic?'✅':'❌')+'</td></tr>';g++})});
+qh+='</table></div>';
+emailjs.send(SERVICE_ID,TEMPLATE_ID,{to_email:TARGET_EMAIL,student_name:name,student_class:klass,exam_date:date,total_score:score,success_rate:rate,grade:badge,answers_table:qh})
+.then(()=>{status.textContent=currentLang==='ar'?'✅ تم الإرسال بنجاح!':'✅ Sent successfully!';status.style.color='#16a34a';btn.textContent=currentLang==='ar'?'✓ تم':'✓ Sent';alert(currentLang==='ar'?'تم إرسال النتيجة للمعلم بنجاح!':'Result sent to teacher successfully!')})
+.catch(err=>{status.textContent=currentLang==='ar'?'❌ فشل الإرسال':'❌ Failed';status.style.color='#dc2626';btn.disabled=false;btn.textContent=currentLang==='ar'?'📧 حاول مرة أخرى':'📧 Try Again'});}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const saved=loadState();
+  if(saved&&saved.seed){currentSeed=saved.seed;currentLang=saved.lang||'ar';timeRemaining=saved.timeRemaining!==undefined?saved.timeRemaining:TOTAL_TIME;answersVisible=saved.answersVisible||false}else{currentSeed=Date.now()}
+  document.getElementById('btn-ar').classList.toggle('active',currentLang==='ar');
+  document.getElementById('btn-en').classList.toggle('active',currentLang==='en');
+  document.body.classList.toggle('en-mode',currentLang==='en');
+  document.documentElement.lang=currentLang;document.documentElement.dir=currentLang==='ar'?'rtl':'ltr';
+  document.querySelectorAll('[data-ar]').forEach(el=>{el.textContent=el.getAttribute('data-'+currentLang)});
+  document.querySelectorAll('[data-placeholder-ar]').forEach(el=>{el.placeholder=el.getAttribute('data-placeholder-'+currentLang)});
+  prepareShuffledExam();renderExam();
+  if(saved){if(saved.studentName)document.getElementById('studentName').value=saved.studentName;if(saved.studentClass)document.getElementById('studentClass').value=saved.studentClass;if(saved.examDate)document.getElementById('examDate').value=saved.examDate;if(saved.answers)restoreAnswers(saved.answers)}
+  setupAnswerListeners();setupInputListeners();
+  document.getElementById('method-holder').innerHTML=svgGraphs.fig_decision;
+  startTimer();
+});
+window.addEventListener('beforeunload',()=>saveState(false));
+</script>
+</body>
+</html>
